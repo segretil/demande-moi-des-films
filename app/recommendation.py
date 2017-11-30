@@ -67,14 +67,14 @@ class Recommendation:
         similarity = 0
         for movie in user_a.good_ratings:
             if movie in user_b.good_ratings:
-                similarity ++
+                similarity += 1
             elif movie in user_b.bad_ratings:
-                similarity --
+                similarity -= 1
         for movie in user_a.bad_ratings:
             if movie in user_b.bad_ratings:
-                similarity ++
+                similarity += 1
             elif movie in user_b.good_ratings:
-                similarity --
+                similarity -= 1
         norm = get_user_norm(user_a)*get_user_norm(user_b)
         return similarity/norm
 
