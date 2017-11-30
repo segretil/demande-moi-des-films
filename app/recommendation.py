@@ -58,7 +58,7 @@ class Recommendation:
     def make_recommendation(self, user):
         movie = choice(list(self.movies.values())).title
         #print(self.test_users)
-        print(compute_all_similarities)
+        print(Recommendation.compute_all_similarities)
         return "Vos recommandations : " + ", ".join([movie])
 
     # Compute the similarity between two users
