@@ -75,7 +75,7 @@ class Recommendation:
                 similarity += 1
             elif movie in user_b.good_ratings:
                 similarity -= 1
-        norm = get_user_norm(user_a)*get_user_norm(user_b)
+        norm = Recommendation.get_user_norm(user_a)*Recommendation.get_user_norm(user_b)
         return similarity/norm
 
     # Compute the similarity between a user and all the users in the data set
