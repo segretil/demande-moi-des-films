@@ -82,7 +82,7 @@ class Recommendation:
     def compute_all_similarities(self, user):
         all_similarities = []
         for other_user in self.test_users:
-            all_similarities.append(self.get_similarity(user_a, other_user))
+            all_similarities.append(self.get_similarity(user, other_user))
         return all_similarities
 
     @staticmethod
