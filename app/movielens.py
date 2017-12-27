@@ -1,7 +1,7 @@
 # Take care of importing the movie database and the training data set
 
 import csv
-
+import sys
 
 class Movie:
 
@@ -30,6 +30,8 @@ class Movie:
         self.western = 0
 
         self.init_genres(genres)
+        reload(sys)
+        sys.setdefaultencoding('utf8')
 
     def init_genres(self, genres):
         for genre in genres.split('|'):

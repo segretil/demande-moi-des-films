@@ -5,8 +5,9 @@
 from random import choice
 
 from app.User import User
-
-
+import sys
+import numpy as np
+from sklearn.cluster import KMeans
 class Recommendation:
 
     def __init__(self, movielens):
@@ -34,6 +35,38 @@ class Recommendation:
 
         # Launch the process of ratings
         self.process_ratings_to_users()
+        self.genres = []
+        for movie in self.movies.values():
+            self.genres.append(self.calculGenre(movie))
+        self.genres = np.array(self.genres)
+
+        self.cluster = KMeans(10)
+        self.cluster.fit(self.genres)
+        reload(sys)
+        sys.setdefaultencoding('utf8')
+
+    @staticmethod
+    def calculGenre(movie):
+        vecteurGenre = [movie.unknown,
+        movie.action,
+        movie.adventure,
+        movie.animation,
+        movie.children,
+        movie.comedy,
+        movie.crime,
+        movie.documentary,
+        movie.drama,
+        movie.fantasy,
+        movie.film_noir,
+        movie.horror,
+        movie.musical,
+        movie.mystery,
+        movie.romance,
+        movie.sci_fi,
+        movie.thriller,
+        movie.war,
+        movie.western]
+        return vecteurGenre
 
     # To process ratings, users associated to ratings are created and every rating is then stored in its user
     def process_ratings_to_users(self):
@@ -56,10 +89,38 @@ class Recommendation:
 
     # Display the recommendation for a user
     def make_recommendation(self, user):
-        movie = choice(list(self.movies.values())).title
+        #movie = choice(list(self.movies.values())).title
         #print(self.test_users)
-        print(self.compute_all_similarities(user))
-        return "Vos recommandations : " + ", ".join([movie])
+        similarities = self.compute_all_similarities(user)
+        otherUserMaxs = []
+        for i in range(5):
+            otherUserMaxs.append(choice(list(self.test_users.values())))
+        simMax = similarities[self.miniMaxUsers(otherUserMaxs, similarities)]
+        for otherUser in similarities:
+            sim = similarities[otherUser]
+            if simMax < sim:
+                aTej = self.miniMaxUsers(otherUserMaxs, similarities)
+                otherUserMaxs.remove(aTej)
+                otherUserMaxs.append(otherUser)
+                simMax = similarities[self.miniMaxUsers(otherUserMaxs, similarities)]
+        titles = []
+        for userMax in otherUserMaxs:
+            movies = userMax.good_ratings
+            for movie in movies:
+                if movie.title not in titles:
+                    titles.append(movie.title)
+        return "Vos recommandations : " + ", ".join(titles)
+
+    def miniMaxUsers(self, maxUsers, similarities):
+        userMin = 0
+        simMin = 10000
+        for userBIS in maxUsers:
+            currentSim = similarities[userBIS]
+            if currentSim < simMin:
+                userMin = userBIS
+                simMin = similarities[userBIS]
+        return userMin
+
 
     # Compute the similarity between two users
     @staticmethod
@@ -80,9 +141,9 @@ class Recommendation:
 
     # Compute the similarity between a user and all the users in the data set
     def compute_all_similarities(self, user):
-        all_similarities = []
-        for other_user in self.test_users:
-            all_similarities.append(self.get_similarity(user, other_user))
+        all_similarities = {}
+        for other_user in self.test_users.values():
+            all_similarities[other_user]= self.get_similarity(user, other_user)
         return all_similarities
 
     @staticmethod
